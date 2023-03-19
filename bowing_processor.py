@@ -4,6 +4,7 @@ from functions.ev_converter import ev_converter_calc
 from functions.df_alpha import alphacalc
 from functions.linearplot import linearfit
 from functions.linearfitold import linearfit2
+from functions.bowingfit2 import bowing_fit
 from matplotlib import pyplot as plt 
 
 import pandas as pd 
@@ -27,6 +28,13 @@ sample_limits = {
     'XAB1315':[0.48, 0.506],
     'XK1786':[0.585, 0.611],
     'XK1787':[0.65, 0.678],
+}
+x_dict = {
+     'XAB1308':0.2,
+    'XAB1309':0.14,
+    'XAB1315':0.25,
+    'XK1786':0.1,
+    'XK1787':0.05,
 }
 sample_name_list = ['XAB1308', 'XAB1309', 'XAB1315', 'XK1786', 'XK1787']
 # Settings
@@ -95,6 +103,8 @@ print(egap_dict)
 sample_regression_dict_2, sample_df_dict_2, egap_dict_2 = linearfit2(df_1_a, sample_name_list, sample_limits)
 
 print(egap_dict_2)
+
+bowing_fit(egap_dict_2, x_dict)
 # plt.figure(0)
 # df_1_a.plot(kind = 'line')
 # plt.legend()
@@ -113,4 +123,3 @@ print(egap_dict_2)
 
 
 #plt.show()
-plt.show()
