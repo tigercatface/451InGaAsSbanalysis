@@ -28,7 +28,7 @@ def basic_importer(
     # Import the data 
     col_0, col_1 = loadtxt(filepath, unpack = True)
 
-    print('Loaded data from:', filepath, ', succesfully!')
+    #print('Loaded data from:', filepath, ', succesfully!')
     return col_0, col_1
 
 
