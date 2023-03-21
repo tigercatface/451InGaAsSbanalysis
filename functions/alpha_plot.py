@@ -27,5 +27,5 @@ def a_plot(
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.yscale('log')
+    #plt.yscale('log')
 

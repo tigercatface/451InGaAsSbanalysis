@@ -164,15 +164,20 @@ print(xk1787_e_data)
 print(xk1787_t_data)
 # curvefit on xk1787
 xk1787_params, xk1787_cov = varshni_fit(xk1787_t_data, xk1787_e_data)
+xk1787_df_a_ev_2 = np.square(xk1787_df_a_ev_2)
 
 
-egap_t_plot(
-    xk1787_params,
-    xk1787_e_data,
-    xk1787_t_data
-            )
 
-plt.show()
+# egap_t_plot(
+#     xk1787_params,
+#     xk1787_e_data,
+#     xk1787_t_data
+#             )
+# plt.title(r'E$_g$ against T for In$_{0.05}$GaAsSb')
+# plt.xlabel('Temperature (K)')
+# plt.ylabel(r'E$_g$ (eV)')
+# plt.legend()
+# plt.show()
 
 # plt.figure(3)
 # egap_plot(
@@ -206,16 +211,16 @@ plt.show()
 #     colour_1, 
 #     colour_2
 # )
-# plt.figure(2)
-# raw_plot(
-#     xk1787_df_a_ev,
-#     'XK1787 T Alpha',
-#     'Photon Energy(eV)', 
-#     'alpha',
-#     colour_1, 
-#     colour_2
-# ),
-# plt.yscale('log')
+plt.figure(2)
+raw_plot(
+    xk1787_df_a_ev_2,
+    'XK1787 T Alpha',
+    'Photon Energy(eV)', 
+    'alpha',
+    colour_1, 
+    colour_2
+),
+plt.yscale('log')
 
 # a_plot(
 #     xab1315_r_020223,
@@ -254,5 +259,5 @@ plt.show()
 #     colour_2
 # )
 # plt.xlim(0.5, 0.75)
-# plt.show()
+plt.show()
 

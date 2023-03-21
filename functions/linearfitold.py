@@ -39,7 +39,7 @@ def linearfit2(
         # Dict of Dataframes, 
         sample_df_dict[sample] = df
         # Perform our linear regression, 
-        
+        print(df)
         y = df[sample].tolist()
         x = df.index.tolist()
         model = sm.OLS(y, sm.add_constant(x))
@@ -62,8 +62,6 @@ def linearfit2(
         print(sample, " Band Gap is: ", egap, "eV")
         #  Want to plot more of the absorption coeff hence
         # Use a different DF for this 
-        df2 = df2[df2.index > lowlim]
-        df2 = df2[df2.index < 0.7]
 
         # Latex in plots
         

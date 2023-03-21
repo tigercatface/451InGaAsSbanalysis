@@ -21,7 +21,7 @@ folder_path_5 = 'data/091122_bg'
 df1 = folder_importer_os(folder_path_5)
 
 #df['quantity'] = df['quantity'].apply(lambda x: x*-1)
-
+#C:\Users\roman\Desktop\mastersproject-20230301T143517Z-001\mastersproject\data
 # Manual correction for the rough sides 
 
 df1['XAB1308'] = df1['XAB1308'].apply(lambda x: x*10)

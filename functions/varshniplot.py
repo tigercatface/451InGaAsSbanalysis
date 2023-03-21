@@ -19,5 +19,9 @@ def egap_t_plot(
     t_data_int = [int(a)for a in t_data]
     ax = plt.axes()
     ax.scatter(t_data_int, egap_data, label = "Data")
-    ax.plot(x, y)
+    lbl = 'E'
+
+    #lbl = r('$E_g(0)$ = ' + str(params[0]) + 'eV, $\alpha$ = ' + str(params[1]) + ', $\beta$ = ' +  str(params[2]))
+    ax.plot(x, y, color = 'Red', label = 'E_g(0) = ' + str(params[0]) + 'eV, alpha = ' + str(params[1]) + ', beta = ' +  str(params[2]))
+
  
