@@ -9,7 +9,11 @@ from matplotlib import pyplot as plt
 
 import pandas as pd 
 import numpy as np 
+A = 5
+plt.rc('figure', figsize=[46.82 * .5**(.5 * A), 33.11 * .5**(.5 * A)])
 
+#plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 
 colour_1 = "#0dd9cb"

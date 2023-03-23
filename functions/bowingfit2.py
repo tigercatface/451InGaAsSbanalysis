@@ -9,10 +9,11 @@ def bowing_fit(
     """
     
     """
-    # Nested functions 
-    def test(x,b):
-        #return -b*x*(1-x) + 0.727(1-x) + 0.283(x)
-        return np.poly1d(b, -0.444-b, 0.727)
+    def Bowingeq(x,b):
+        #0.75*b*x**2 - x*(0.444-0.75*b)+ 0.727
+        # return b*x**2 - x*(0.444-0.75*b)+ 0.727
+        return 0.727*(1-x)+0.283*x- x*b*(1-x)
+    
     x_list = []
     e_list = []
     for sample in egap_dict:
@@ -24,5 +25,10 @@ def bowing_fit(
         indium_frac = indiumalloy_dict[sample]
         e_list.append(band_gap)
         x_list.append(indium_frac)
-    param, param_cov = curve_fit(test, x_list, e_list)
+
+    print(x_list)
+    print(e_list)
+    parameters, covarience = curve_fit(Bowingeq, x_list, e_list)
+    return parameters, covarience
+
 

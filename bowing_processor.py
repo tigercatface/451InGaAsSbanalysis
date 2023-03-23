@@ -1,12 +1,11 @@
 from functions.folder_importer2 import folder_importer_os
-from functions.df_normalizer import df_normalizing_function
 from functions.ev_converter import ev_converter_calc
 from functions.df_alpha import alphacalc
-from functions.linearplot import linearfit
-from functions.linearfitold import linearfit2
-from functions.bowingfit2 import bowing_fit
+from functions.linearfit3 import linearfit3
+from functions.res_plot_creator import res_data_creator
+from functions.derivativecalc import deriv_calc
 from matplotlib import pyplot as plt 
-
+from functions.bowingfit2 import bowing_fit
 import pandas as pd 
 import numpy as np 
 
@@ -22,7 +21,7 @@ folder_path_2 = 'data/091122_2_bg'
 df1 = folder_importer_os(folder_path_1)
 df2 = folder_importer_os(folder_path_2)
 # Ranges for Fitting FunctionsL 
-sample_limits = {
+sample_limits_1 = {
     'XAB1308':[0.501,0.5237],
     'XAB1309':[0.57,0.589],
     'XAB1315':[0.48, 0.506],
@@ -83,10 +82,10 @@ df_2_a = alphacalc(df2norm,1000)
 
 # Drop the Irrelevent data 
 
-df_1_a = df_1_a[df_1_a.index < 0.8]
-df_2_a = df_2_a[df_2_a.index < 0.8]
-df_1_a = df_1_a[df_1_a.index > 0.4]
-df_2_a = df_2_a[df_2_a.index > 0.4]
+df_1_a = df_1_a[df_1_a.index < 0.75]
+df_2_a = df_2_a[df_2_a.index < 0.75]
+df_1_a = df_1_a[df_1_a.index > 0.45]
+df_2_a = df_2_a[df_2_a.index > 0.45]
 # Negative values are noise 
 df_1_a = df_1_a.clip(lower = 0)
 df_2_a = df_2_a.clip(lower = 0)
@@ -95,17 +94,57 @@ df_2_a = df_2_a.clip(lower = 0)
 
 df_1_a = np.square(df_1_a)
 df_2_a = np.square(df_2_a)
-
 # Linear fit to find band gap 
+res_dict, egap_dict, errors_dict = linearfit3(df_2_a, sample_limits_1)
+print(errors_dict)
+# Data creation 
+data_dict = res_data_creator(res_dict, sample_limits_1)
+df3 = df_1_a.copy()
+df3 = df3.rolling(500).mean()
 
-sample_regression_dict, egap_dict = linearfit(df_1_a, sample_limits)
-print(egap_dict)
-sample_regression_dict_2, sample_df_dict_2, egap_dict_2 = linearfit2(df_1_a, sample_name_list, sample_limits)
+df_deriv = deriv_calc(df3, [0.48,0.77])
 
-print(egap_dict_2)
+# Bowing stuff now 
+vurga_bowing_x = np.linspace(0,1,50)
+vurga_bowing_y = 0.727*(1-vurga_bowing_x) + 0.283*vurga_bowing_x - 0.75*vurga_bowing_x*(1-vurga_bowing_x)
+vurga_label = 'b = 0.75eV (Vurgaftman et al)'
 
-bowing_fit(egap_dict_2, x_dict)
-# plt.figure(0)
+# Bowing fit 
+bowing_p, bowing_c = bowing_fit(egap_dict, x_dict)
+data_bowing_y = 0.727*(1-vurga_bowing_x) + 0.283*vurga_bowing_x - bowing_p[0]*vurga_bowing_x*(1-vurga_bowing_x)
+e_list = []
+x_list = []
+for sample in egap_dict:
+    e_list.append(egap_dict[sample])
+    x_list.append(x_dict[sample])
+plt.plot(vurga_bowing_x, vurga_bowing_y, label = r'b = 0.75eV Vurgaftman Data' )
+plt.plot(vurga_bowing_x, data_bowing_y, label = 'Polyfit without errors')
+plt.title('Bowing Plot')
+plt.ylabel(r'E$_g$ (eV)')
+plt.xlabel(r'In$_x$GaAsSb Alloy fraction x')
+plt.scatter(x_list, e_list, label ='Band gaps ')
+plt.legend()
+plt.show()
+
+
+# Plotting 
+# df_1_a.replace(0,np.nan, inplace = True)
+# df_1_a.plot(kind = 'line')
+# plt.legend()
+# for sample in data_dict:
+#     plt.plot(data_dict[sample][0], data_dict[sample][1], linestyle = 'dashed', color = 'black', linewidth = 2)
+# plt.suptitle(r'$\alpha^2$ for For Different GaInAsSb Samples', y=0.98, fontsize=17)
+# plt.title(r'Linear fit applied to Obtain E_g', fontsize=10)
+# plt.xlabel('Photon Energy (eV)')
+# plt.ylabel(r'$\alpha^2 $(cm$^{-2}$)')
+# plt.figure(1)
+# df_deriv.plot(kind='line')
+# plt.legend()
+# plt.suptitle(r'd/dx[$\alpha^2$] for Different Samples', y=0.98, fontsize=17)
+# plt.title(r'Smoothed using a rolling mean with a window size of 500', fontsize=10)
+# plt.xlabel('Photon Energy (eV)')
+# plt.ylabel(r'Differential of $\alpha^2$ (arbitraty units)')
+# # plt.figure(0)
 # df_1_a.plot(kind = 'line')
 # plt.legend()
 # plt.title('Absorption Coefficient against Photon Energy for different GaInAsSb compositions')
@@ -122,4 +161,4 @@ bowing_fit(egap_dict_2, x_dict)
 #plt.yscale('log')
 
 
-#plt.show()
+plt.show()
