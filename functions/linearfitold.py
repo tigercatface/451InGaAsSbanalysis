@@ -39,7 +39,7 @@ def linearfit2(
         # Dict of Dataframes, 
         sample_df_dict[sample] = df
         # Perform our linear regression, 
-        print(df)
+        #print(df)
         y = df[sample].tolist()
         x = df.index.tolist()
         model = sm.OLS(y, sm.add_constant(x))

@@ -6,6 +6,7 @@ from functions.res_plot_creator import res_data_creator
 from functions.derivativecalc import deriv_calc
 from matplotlib import pyplot as plt 
 from functions.bowingfit2 import bowing_fit
+from functions.bowing_odr import bowing_odr
 import pandas as pd 
 import numpy as np 
 
@@ -35,6 +36,15 @@ x_dict = {
     'XK1786':0.1,
     'XK1787':0.05,
 }
+
+deriv_dict = {
+    'XAB1308': 0.496,
+    'XAB1309': 0.557,
+    'XAB1315': 0.460,
+    'XK1786' : 0.580,
+    'XK1787' : 0.634
+}
+
 sample_name_list = ['XAB1308', 'XAB1309', 'XAB1315', 'XK1786', 'XK1787']
 # Settings
 A = 5  # Want figures to be A6
@@ -59,7 +69,7 @@ df2['XK1786'] = df2['XK1786'].apply(lambda x: x*10)
 # Create another df and insert gaas into it: 
 df1gaas = pd.DataFrame()
 df2gaas = pd.DataFrame()
-print(df1.columns.tolist())
+#print(df1.columns.tolist())
 df1gaas['GaAs'] = df1['GaAs']
 df2gaas['GaAs'] = df2['GaAs']
 df1 = df1.drop(columns = ['GaAs'])
@@ -96,34 +106,52 @@ df_1_a = np.square(df_1_a)
 df_2_a = np.square(df_2_a)
 # Linear fit to find band gap 
 res_dict, egap_dict, errors_dict = linearfit3(df_2_a, sample_limits_1)
-print(errors_dict)
-# Data creation 
+#print(errors_dict)
+# Data creation for linear fits 
 data_dict = res_data_creator(res_dict, sample_limits_1)
+print(errors_dict)
+# Derivative method 
 df3 = df_1_a.copy()
+df3.to_pickle('091122_data')
 df3 = df3.rolling(500).mean()
-
 df_deriv = deriv_calc(df3, [0.48,0.77])
-
+df_deriv_max = df_deriv.idxmax()
 # Bowing stuff now 
 vurga_bowing_x = np.linspace(0,1,50)
 vurga_bowing_y = 0.727*(1-vurga_bowing_x) + 0.283*vurga_bowing_x - 0.75*vurga_bowing_x*(1-vurga_bowing_x)
 vurga_label = 'b = 0.75eV (Vurgaftman et al)'
 
 # Bowing fit 
-bowing_p, bowing_c = bowing_fit(egap_dict, x_dict)
+bowing_p, bowing_perror = bowing_fit(egap_dict, x_dict)
 data_bowing_y = 0.727*(1-vurga_bowing_x) + 0.283*vurga_bowing_x - bowing_p[0]*vurga_bowing_x*(1-vurga_bowing_x)
+bowing_deriv, bowing_deriv_error = bowing_fit(deriv_dict, x_dict)
+deriv_bowing_y = 0.727*(1-vurga_bowing_x) + 0.283*vurga_bowing_x - bowing_deriv[0]*vurga_bowing_x*(1-vurga_bowing_x)
+# ODR fit
+#bowing_odr(egap_dict, x_dict, errors_dict)
+print(r"Non-Linear least square fit b =",(bowing_p[0])," eV, $\pm$", bowing_perror[0])
 e_list = []
 x_list = []
+e_deriv_list = []
+yerrorlist = []
+
+print('derivative', bowing_deriv[0], bowing_deriv_error[0] )
 for sample in egap_dict:
     e_list.append(egap_dict[sample])
     x_list.append(x_dict[sample])
-plt.plot(vurga_bowing_x, vurga_bowing_y, label = r'b = 0.75eV Vurgaftman Data' )
-plt.plot(vurga_bowing_x, data_bowing_y, label = 'Polyfit without errors')
-plt.title('Bowing Plot')
+    e_deriv_list.append(deriv_dict[sample])
+    yerrorlist.append(errors_dict[sample])
+
+plt.plot(vurga_bowing_x, vurga_bowing_y,  label = r'b = 0.75eV Vurgaftman Data' )
+plt.plot(vurga_bowing_x, data_bowing_y, label = 'Linear fit bowing fit')
+plt.scatter(x_list, e_deriv_list,label = r'Derivative E$_g$', s = 20)
+plt.plot(vurga_bowing_x, deriv_bowing_y, label = 'Derivative bowing Fit')
+plt.title(r'InGaAsSb Bowing for Linear and Derivative E$_g$ Calculation Methods')
 plt.ylabel(r'E$_g$ (eV)')
 plt.xlabel(r'In$_x$GaAsSb Alloy fraction x')
-plt.scatter(x_list, e_list, label ='Band gaps ')
+plt.errorbar(x_list, e_list, label =r'Linear E$_g$', yerr =  yerrorlist, fmt='.', capsize= 2)
+
 plt.legend()
+
 plt.show()
 
 
@@ -161,4 +189,4 @@ plt.show()
 #plt.yscale('log')
 
 
-plt.show()
+#plt.show()

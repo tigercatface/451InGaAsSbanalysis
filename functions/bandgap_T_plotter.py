@@ -8,7 +8,7 @@ def egap_plot(
     xlabel,
     ylabel,
 ):
-    plt.scatter(df.index, df.values)
+    plt.scatter(list(df.index), df.values)
     plt.title(title)
 
     plt.ylabel(ylabel)

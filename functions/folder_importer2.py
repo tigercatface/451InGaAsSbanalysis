@@ -30,7 +30,9 @@ def folder_importer_os(
     # with no issues however need to be careful
     txt_files = filter(lambda x: x[-4:] == '.txt', file_list)
     # Begin to loop over txt_files 
+    full_path_list = []
     for sub_path in txt_files: 
+        #print(sub_path)
         # Clear global vars: 
         full_path = ""
         sample_name = ""
@@ -42,7 +44,7 @@ def folder_importer_os(
 
         # get the full path 
         full_path = folder_path + '/' + sub_path
-
+        #full_path_list.append(full_path)
         # Use the previously created basic imported to import the file 
         # This just checks for erros
         try:
@@ -56,7 +58,7 @@ def folder_importer_os(
         # NOTE this jerry fix will break if _01 or _001
         # only works for _1
 
-        # 
+        #
         try: 
             df[sample_name] = col_1
         except:
@@ -67,11 +69,8 @@ def folder_importer_os(
                 ' ',
                 'df length = ',
                 len(df.index.tolist()))
-
-
-    # Need to append the wavelength 
-    df['col_0'] = col_0
-    df = df.set_index('col_0')
+    df['wavelength'] = col_0
+    df = df.set_index('wavelength')
 
     return df
 
